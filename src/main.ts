@@ -3,6 +3,56 @@ worker.postMessage(["init"]);
 const $container = document.querySelector("#container") as HTMLDivElement;
 const formater = new Intl.DateTimeFormat("es-MX", { dateStyle: "full" });
 
+const getReadableTimeDifference = (diferenciaEnMilisegundos: number): string => {
+    const diasQueTieneUnAño = 365.25;
+    const diasQueTieneUnMes = 30.437;
+    const unSegundoEnMilisegundos = 1000;
+    const unMinutoEnMilisegundos = unSegundoEnMilisegundos * 60;
+    const unaHoraEnMilisegundos = unMinutoEnMilisegundos * 60;
+    const unDiaEnMilisegundos = unaHoraEnMilisegundos * 24;
+    const unMesEnMilisegundos = unDiaEnMilisegundos * diasQueTieneUnMes;
+    const unAñoEnMilisegundos = unDiaEnMilisegundos * diasQueTieneUnAño;
+    const años = Math.floor(diferenciaEnMilisegundos / unAñoEnMilisegundos);
+    diferenciaEnMilisegundos -= años * unAñoEnMilisegundos;
+    const meses = Math.floor(diferenciaEnMilisegundos / unMesEnMilisegundos);
+    diferenciaEnMilisegundos -= meses * unMesEnMilisegundos;
+    const dias = Math.floor(diferenciaEnMilisegundos / unDiaEnMilisegundos);
+    diferenciaEnMilisegundos -= dias * unDiaEnMilisegundos;
+    const horas = Math.floor(diferenciaEnMilisegundos / unaHoraEnMilisegundos);
+    diferenciaEnMilisegundos -= horas * unaHoraEnMilisegundos;
+    const minutos = Math.floor(diferenciaEnMilisegundos / unMinutoEnMilisegundos);
+    diferenciaEnMilisegundos -= minutos * unMinutoEnMilisegundos;
+    const segundos = Math.floor(diferenciaEnMilisegundos / unSegundoEnMilisegundos);
+    diferenciaEnMilisegundos -= segundos * unSegundoEnMilisegundos;
+    let resultado = "";
+    if (años > 0) {
+        resultado += `${años} años, `;
+    }
+    if (meses > 0) {
+        resultado += `${meses} meses, `;
+    }
+    if (dias > 0) {
+        resultado += `${dias} días, `;
+    }
+    if (horas > 0) {
+        resultado += `${horas} horas, `;
+    }
+    if (minutos > 0) {
+        resultado += `${minutos} minutos, `;
+    }
+    if (segundos > 0) {
+        resultado += `${segundos} segundos`;
+    }
+    return resultado;
+}
+
+const getActualAge = (birthDateAsString: string) => {
+    const now = new Date();
+    const birthDate = new Date(birthDateAsString);
+    let diferenciaEnMilisegundos = now.getTime() - birthDate.getTime();
+    return getReadableTimeDifference(diferenciaEnMilisegundos);
+}
+
 const obtenerCumpleañosDeEsteAño = (birthDate: string): Date => {
     const ahora = new Date();
     const cumpleañosDeEsteAño = new Date(birthDate);
@@ -62,11 +112,11 @@ const getReadableAge = (birthDate: string): string => {
         resultado += `, ${dias} días`;
     }
 
-    return `${resultado} siguiente ${formater.format(obtenerProximoCumpleaños(birthDate))}`;
+    return resultado;
 };
 
 const getReadableNextBirthday = (birthDate: string): string => {
-    return "En 5 años";
+    return formater.format(obtenerProximoCumpleaños(birthDate))
 }
 
 worker.onmessage = event => {
@@ -78,27 +128,14 @@ worker.onmessage = event => {
             break;
         case "people_fetched":
             const people = actionArgs;
+            const ahora = new Date();
             for (const person of people) {
-                const smallBirthDate = document.createElement("small") as HTMLElement;
-                smallBirthDate.textContent = ` (${getReadableBirthDate(person.birthDate)})`;
-                const personNameTitle = document.createElement("h1") as HTMLHeadingElement;
-                personNameTitle.textContent = person.name;
-                personNameTitle.className = "text-2xl font-bold";
-                personNameTitle.appendChild(smallBirthDate);
-                const div = document.createElement("div") as HTMLDivElement;
-                div.className = "bg-lime-100 rounded-md p-1 mb-2";
-                const spanAge = document.createElement("span") as HTMLSpanElement;
-                spanAge.className = "font-bold bg-indigo-400 text-white rounded-md p-1 mr-1";
-                spanAge.textContent = getReadableAge(person.birthDate);
-                const smallNextBirthday = document.createElement("small") as HTMLElement;
-                smallNextBirthday.textContent = getReadableNextBirthday(person.birthDate);
-                const paragraphAgeAndNextBirthday = document.createElement("p") as HTMLParagraphElement;
-                paragraphAgeAndNextBirthday.className = "my-2";
-                paragraphAgeAndNextBirthday.appendChild(spanAge);
-                paragraphAgeAndNextBirthday.appendChild(smallNextBirthday);
-                div.appendChild(personNameTitle);
-                div.appendChild(paragraphAgeAndNextBirthday);
-                $container.append(div);
+                $container.innerHTML += `<div class="bg-white rounded-md p-1 mb-2 shadow border-gray-200 border">
+                <h1 class="text-2xl font-bold">${person.name}<small class="text-zinc-700"> ${getReadableBirthDate(person.birthDate)}</small></h1>
+                <p class="my-2"><strong class="font-bold bg-green-500 text-white rounded-md p-1 mr-1 ">Edad</strong>${getReadableAge(person.birthDate)}</p>
+                <p class="my-2"><strong class="font-bold bg-red-500 text-white rounded-md p-1 mr-1 ">Precisa</strong>${getActualAge(person.birthDate)}</p>
+                <p class="my-2"><strong class="font-bold bg-sky-500 text-white rounded-md p-1 mr-1 ">Siguiente</strong>${getReadableNextBirthday(person.birthDate)} (en ${getReadableTimeDifference(obtenerProximoCumpleaños(person.birthDate).getTime() - ahora.getTime())})</p>
+                </div>`;
             }
             console.log({ argumentos: actionArgs });
             break;
