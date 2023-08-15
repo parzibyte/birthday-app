@@ -33,6 +33,7 @@ const getPeople = async (criteria: string) => {
 		sql += " WHERE name LIKE ?";
 		parameters = [`%${criteria}%`];
 	}
+	sql += " ORDER BY birthDate DESC";
 	return await db.exec({
 		sql,
 		bind: parameters,

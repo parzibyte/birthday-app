@@ -9,7 +9,7 @@ worker.onmessage = event => {
 			[$saveButton].forEach(element => element.disabled = false);
 			break;
 		case "person_stored":
-			console.log({ argumentos: actionArgs });
+			window.location.href = "./index.html";
 			break;
 	}
 }
