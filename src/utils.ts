@@ -9,11 +9,16 @@ export const debounce = (callback: Function, wait: number) => {
 	};
 };
 
-export const getPersonHtml = (person: Person, ahora: Date): string => {
+export const getPersonHtml = (person: Person): string => {
 	return `<h1 class="text-2xl font-bold">${person.name}<small class="text-zinc-700"> ${getReadableBirthDate(person.birthDate)}</small></h1>
-                <p class="my-2"><strong class="font-bold bg-green-500 text-white rounded-md p-1 mr-1 ">Edad</strong>${getReadableAge(person.birthDate)}</p>
-                <p class="my-2"><strong class="font-bold bg-red-500 text-white rounded-md p-1 mr-1 ">Precisa</strong>${getActualAge(person.birthDate)}</p>
-                <p class="my-2"><strong class="font-bold bg-sky-500 text-white rounded-md p-1 mr-1 ">Siguiente</strong>${getReadableNextBirthday(person.birthDate)} (en ${getReadableTimeDifference(obtenerProximoCumpleaños(person.birthDate).getTime() - ahora.getTime())})</p>`;
+<p class="my-2"><strong class="font-bold bg-green-500 text-white rounded-md p-1 mr-1 ">Edad</strong>
+<span class="person-age"></span></p>
+<p class="my-2"><strong class="font-bold bg-red-500 text-white rounded-md p-1 mr-1 ">Precisa</strong>
+<span class="person-actual-age"></span>
+</p>
+<p class="my-2"><strong class="font-bold bg-sky-500 text-white rounded-md p-1 mr-1 ">Siguiente</strong>
+<span class="person-next-birthday"></span>
+</p>`;
 
 }
 export const getReadableTimeDifference = (diferenciaEnMilisegundos: number): string => {
