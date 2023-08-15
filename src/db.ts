@@ -26,9 +26,16 @@ const storePerson = async (name: string, birthDate: string) => {
 	});
 	return rows[0];
 }
-const getPeople = async () => {
+const getPeople = async (criteria: string) => {
+	let sql = "SELECT id, name, birthDate FROM people";
+	let parameters: string[] = [];
+	if (criteria) {
+		sql += " WHERE name LIKE ?";
+		parameters = [`%${criteria}%`];
+	}
 	return await db.exec({
-		sql: "SELECT id, name, birthDate FROM people",
+		sql,
+		bind: parameters,
 		returnValue: "resultRows",
 		rowMode: "object",
 	});
@@ -70,7 +77,7 @@ self.onmessage = async (event) => {
 			self.postMessage(["person_stored", storedPerson]);
 			break;
 		case "get_people":
-			const people = await getPeople();
+			const people = await getPeople(actionArgs.criteria || "");
 			self.postMessage(["people_fetched", people]);
 			break;
 		case "get_person_details":

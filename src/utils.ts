@@ -1,4 +1,13 @@
 const formater = new Intl.DateTimeFormat("es-MX", { dateStyle: "full" });
+export const debounce = (callback: Function, wait: number) => {
+	let timerId: number;
+	return (...args: any[]) => {
+		clearTimeout(timerId);
+		timerId = setTimeout(() => {
+			callback(...args);
+		}, wait);
+	};
+};
 
 export const getPersonHtml = (person: Person, ahora: Date): string => {
 	return `<h1 class="text-2xl font-bold">${person.name}<small class="text-zinc-700"> ${getReadableBirthDate(person.birthDate)}</small></h1>

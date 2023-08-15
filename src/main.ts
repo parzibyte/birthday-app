@@ -1,8 +1,9 @@
 const worker = new Worker(new URL("./db.ts", import.meta.url), { type: "module" });
 worker.postMessage(["init"]);
 const $container = document.querySelector("#container") as HTMLDivElement,
-    $registerButton = document.querySelector("#registerButton") as HTMLButtonElement;
-import { getPersonHtml } from "./utils";
+    $registerButton = document.querySelector("#registerButton") as HTMLButtonElement,
+    $searchInput = document.querySelector("#searchInput") as HTMLInputElement;
+import { debounce, getPersonHtml } from "./utils";
 
 worker.onmessage = event => {
     const action = event.data[0];
@@ -12,9 +13,15 @@ worker.onmessage = event => {
             $registerButton.addEventListener("click", () => {
                 window.location.href = "./register.html";
             });
-            worker.postMessage(["get_people"]);
+            $searchInput.addEventListener("input", debounce(() => {
+                worker.postMessage(["get_people", { criteria: $searchInput.value }]);
+            }, 250));
+            worker.postMessage(["get_people", {}]);
             break;
         case "people_fetched":
+            while ($container.firstChild) {
+                $container.removeChild($container.firstChild);
+            }
             const people = actionArgs as Person[];
             const ahora = new Date();
             for (const person of people) {
@@ -26,7 +33,6 @@ worker.onmessage = event => {
                 div.innerHTML = getPersonHtml(person, ahora);
                 $container.appendChild(div);
             }
-            console.log({ argumentos: actionArgs });
             break;
     }
 }
