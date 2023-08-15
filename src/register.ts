@@ -3,7 +3,6 @@ worker.postMessage(["init"]);
 
 worker.onmessage = event => {
 	const action = event.data[0];
-	const actionArgs = event.data[1];
 	switch (action) {
 		case "ready":
 			[$saveButton].forEach(element => element.disabled = false);
