@@ -4,15 +4,15 @@ const $container = document.querySelector("#container") as HTMLDivElement,
     $registerButton = document.querySelector("#registerButton") as HTMLButtonElement,
     $searchInput = document.querySelector("#searchInput") as HTMLInputElement;
 
-let elementos: HTMLDivElement[] = [];
-import { debounce, getActualAge, getPersonHtml, getReadableAge, getReadableNextBirthday, getReadableTimeDifference, obtenerProximoCumpleaños } from "./utils";
+let divElements: HTMLDivElement[] = [];
+import { debounce, getActualAge, getPersonHtml, getReadableAge, getReadableNextBirthday, getReadableTimeDifference, getNextBirthday } from "./utils";
 
 const updateDates = () => {
-    const ahora = new Date();
-    for (const elemento of elementos) {
-        (elemento.querySelector(".person-age")).textContent = getReadableAge(elemento.dataset.birthDate);
-        (elemento.querySelector(".person-actual-age")).textContent = getActualAge(elemento.dataset.birthDate);
-        (elemento.querySelector(".person-next-birthday")).textContent = `${getReadableNextBirthday(elemento.dataset.birthDate)} (en ${getReadableTimeDifference(obtenerProximoCumpleaños(elemento.dataset.birthDate).getTime() - ahora.getTime())})`;
+    const now = new Date();
+    for (const divElement of divElements) {
+        (divElement.querySelector(".person-age")).textContent = getReadableAge(divElement.dataset.birthDate);
+        (divElement.querySelector(".person-actual-age")).textContent = getActualAge(divElement.dataset.birthDate);
+        (divElement.querySelector(".person-next-birthday")).textContent = `${getReadableNextBirthday(divElement.dataset.birthDate)} (en ${getReadableTimeDifference(getNextBirthday(divElement.dataset.birthDate).getTime() - now.getTime())})`;
     }
 };
 
@@ -38,7 +38,7 @@ worker.onmessage = event => {
             while ($container.firstChild) {
                 $container.removeChild($container.firstChild);
             }
-            elementos.length = 0;
+            divElements.length = 0;
             const people = actionArgs as Person[];
             for (const person of people) {
                 const div = document.createElement("div") as HTMLDivElement;
@@ -48,7 +48,7 @@ worker.onmessage = event => {
                 });
                 div.className = "bg-white rounded-md p-1 mb-2 shadow border-gray-200 border cursor-pointer ";
                 div.innerHTML = getPersonHtml(person);
-                elementos.push(div);
+                divElements.push(div);
                 $container.appendChild(div);
             }
             updateDates();

@@ -21,76 +21,76 @@ export const getPersonHtml = (person: Person): string => {
 </p>`;
 
 }
-export const getReadableTimeDifference = (diferenciaEnMilisegundos: number): string => {
-	const diasQueTieneUnAño = 365.25;
-	const diasQueTieneUnMes = 30.437;
-	const unSegundoEnMilisegundos = 1000;
-	const unMinutoEnMilisegundos = unSegundoEnMilisegundos * 60;
-	const unaHoraEnMilisegundos = unMinutoEnMilisegundos * 60;
-	const unDiaEnMilisegundos = unaHoraEnMilisegundos * 24;
-	const unMesEnMilisegundos = unDiaEnMilisegundos * diasQueTieneUnMes;
-	const unAñoEnMilisegundos = unDiaEnMilisegundos * diasQueTieneUnAño;
-	const años = Math.floor(diferenciaEnMilisegundos / unAñoEnMilisegundos);
-	diferenciaEnMilisegundos -= años * unAñoEnMilisegundos;
-	const meses = Math.floor(diferenciaEnMilisegundos / unMesEnMilisegundos);
-	diferenciaEnMilisegundos -= meses * unMesEnMilisegundos;
-	const dias = Math.floor(diferenciaEnMilisegundos / unDiaEnMilisegundos);
-	diferenciaEnMilisegundos -= dias * unDiaEnMilisegundos;
-	const horas = Math.floor(diferenciaEnMilisegundos / unaHoraEnMilisegundos);
-	diferenciaEnMilisegundos -= horas * unaHoraEnMilisegundos;
-	const minutos = Math.floor(diferenciaEnMilisegundos / unMinutoEnMilisegundos);
-	diferenciaEnMilisegundos -= minutos * unMinutoEnMilisegundos;
-	const segundos = Math.floor(diferenciaEnMilisegundos / unSegundoEnMilisegundos);
-	diferenciaEnMilisegundos -= segundos * unSegundoEnMilisegundos;
-	let resultado = "";
-	if (años > 0) {
-		resultado += `${años} años, `;
+export const getReadableTimeDifference = (differenceInMilliseconds: number): string => {
+	const daysInAYear = 365.25;
+	const daysInAMonth = 30.437;
+	const millisecondsInASecond = 1000;
+	const millisecondsInAMinute = millisecondsInASecond * 60;
+	const millisecondsInAHour = millisecondsInAMinute * 60;
+	const millisecondsInADay = millisecondsInAHour * 24;
+	const millisecondsInAMonth = millisecondsInADay * daysInAMonth;
+	const millisecondsInAYear = millisecondsInADay * daysInAYear;
+	const years = Math.floor(differenceInMilliseconds / millisecondsInAYear);
+	differenceInMilliseconds -= years * millisecondsInAYear;
+	const months = Math.floor(differenceInMilliseconds / millisecondsInAMonth);
+	differenceInMilliseconds -= months * millisecondsInAMonth;
+	const days = Math.floor(differenceInMilliseconds / millisecondsInADay);
+	differenceInMilliseconds -= days * millisecondsInADay;
+	const hours = Math.floor(differenceInMilliseconds / millisecondsInAHour);
+	differenceInMilliseconds -= hours * millisecondsInAHour;
+	const minutes = Math.floor(differenceInMilliseconds / millisecondsInAMinute);
+	differenceInMilliseconds -= minutes * millisecondsInAMinute;
+	const seconds = Math.floor(differenceInMilliseconds / millisecondsInASecond);
+	differenceInMilliseconds -= seconds * millisecondsInASecond;
+	let result = "";
+	if (years > 0) {
+		result += `${years} años, `;
 	}
-	if (meses > 0) {
-		resultado += `${meses} meses, `;
+	if (months > 0) {
+		result += `${months} meses, `;
 	}
-	if (dias > 0) {
-		resultado += `${dias} días, `;
+	if (days > 0) {
+		result += `${days} días, `;
 	}
-	if (horas > 0) {
-		resultado += `${horas} horas, `;
+	if (hours > 0) {
+		result += `${hours} horas, `;
 	}
-	if (minutos > 0) {
-		resultado += `${minutos} minutos, `;
+	if (minutes > 0) {
+		result += `${minutes} minutos, `;
 	}
-	if (segundos > 0) {
-		resultado += `${segundos} segundos`;
+	if (seconds > 0) {
+		result += `${seconds} segundos`;
 	}
-	return resultado;
+	return result;
 }
 
 export const getActualAge = (birthDateAsString: string) => {
 	const now = new Date();
 	const birthDate = new Date(birthDateAsString);
-	let diferenciaEnMilisegundos = now.getTime() - birthDate.getTime();
-	return getReadableTimeDifference(diferenciaEnMilisegundos);
+	let differenceInMilliseconds = now.getTime() - birthDate.getTime();
+	return getReadableTimeDifference(differenceInMilliseconds);
 }
 
-export const obtenerCumpleañosDeEsteAño = (birthDate: string): Date => {
-	const ahora = new Date();
-	const cumpleañosDeEsteAño = new Date(birthDate);
-	cumpleañosDeEsteAño.setFullYear(ahora.getFullYear());
-	return cumpleañosDeEsteAño;
+export const getThisYearsBirthday = (birthDate: string): Date => {
+	const now = new Date();
+	const thisYearsBirthday = new Date(birthDate);
+	thisYearsBirthday.setFullYear(now.getFullYear());
+	return thisYearsBirthday;
 }
 
-export const obtenerProximoCumpleaños = (birthdate: string) => {
-	const cumpleañosDeEsteAño = obtenerCumpleañosDeEsteAño(birthdate);
-	const ahora = new Date();
-	if (ahora.getTime() > cumpleañosDeEsteAño.getTime()) {
-		cumpleañosDeEsteAño.setFullYear(cumpleañosDeEsteAño.getFullYear() + 1);
+export const getNextBirthday = (birthdate: string) => {
+	const thisYearsBirthday = getThisYearsBirthday(birthdate);
+	const now = new Date();
+	if (now.getTime() > thisYearsBirthday.getTime()) {
+		thisYearsBirthday.setFullYear(thisYearsBirthday.getFullYear() + 1);
 	}
-	return cumpleañosDeEsteAño;
+	return thisYearsBirthday;
 }
 
-export const cantidadDeDiasEnMesAnterior = (): number => {
-	const ahora = new Date();
-	ahora.setMonth(ahora.getMonth() - 1, 0);
-	return ahora.getDate();
+export const daysInPreviousMonth = (): number => {
+	const now = new Date();
+	now.setMonth(now.getMonth() - 1, 0);
+	return now.getDate();
 }
 
 
@@ -98,41 +98,41 @@ export const getReadableBirthDate = (birthDate: string): string => {
 	return formater.format(new Date(birthDate));
 }
 
-export const getReadableAge = (birthDate: string): string => {
-	let nacimiento = new Date(birthDate);
-	let resultado = "";
-	const ahora = new Date();
-	const cumpleañosYaHaPasado: boolean = ahora.getTime() > obtenerCumpleañosDeEsteAño(birthDate).getTime();
-	let años = ahora.getFullYear() - nacimiento.getFullYear() + (cumpleañosYaHaPasado ? 0 : -1);
-	let meses: number, dias: number;
-	const diaEnEsteMes = new Date();
-	diaEnEsteMes.setDate(nacimiento.getDate());
-	if (ahora.getDate() < diaEnEsteMes.getDate()) {
-		dias = ahora.getDate() + (cantidadDeDiasEnMesAnterior() - nacimiento.getDate()) + 1;
+export const getReadableAge = (birthDateAsString: string): string => {
+	let birthDate = new Date(birthDateAsString);
+	let result = "";
+	const now = new Date();
+	const birthdayAlreadyHappened: boolean = now.getTime() > getThisYearsBirthday(birthDateAsString).getTime();
+	let years = now.getFullYear() - birthDate.getFullYear() + (birthdayAlreadyHappened ? 0 : -1);
+	let months: number, days: number;
+	const thisMonthDate = new Date();
+	thisMonthDate.setDate(birthDate.getDate());
+	if (now.getDate() < thisMonthDate.getDate()) {
+		days = now.getDate() + (daysInPreviousMonth() - birthDate.getDate()) + 1;
 	} else {
-		dias = ahora.getDate() - nacimiento.getDate();
+		days = now.getDate() - birthDate.getDate();
 	}
-	if (cumpleañosYaHaPasado) {
-		meses = ahora.getMonth() - nacimiento.getMonth() - 1;
-		if (meses < 0) {
-			meses = 0;
+	if (birthdayAlreadyHappened) {
+		months = now.getMonth() - birthDate.getMonth() - 1;
+		if (months < 0) {
+			months = 0;
 		}
 	} else {
-		meses = (11 - nacimiento.getMonth()) + ahora.getMonth();
+		months = (11 - birthDate.getMonth()) + now.getMonth();
 	}
-	if (años > 0) {
-		resultado += `${años} años`;
+	if (years > 0) {
+		result += `${years} años`;
 	}
-	if (meses > 0) {
-		resultado += `, ${meses} meses`;
+	if (months > 0) {
+		result += `, ${months} meses`;
 	}
-	if (dias > 0) {
-		resultado += `, ${dias} días`;
+	if (days > 0) {
+		result += `, ${days} días`;
 	}
 
-	return resultado;
+	return result;
 };
 
 export const getReadableNextBirthday = (birthDate: string): string => {
-	return formater.format(obtenerProximoCumpleaños(birthDate))
+	return formater.format(getNextBirthday(birthDate))
 }
