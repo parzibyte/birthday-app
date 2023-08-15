@@ -33,6 +33,30 @@ const getPeople = async () => {
 		rowMode: "object",
 	});
 }
+const getPersonById = async (id: string) => {
+	const rows = await db.exec({
+		sql: "SELECT id, name, birthDate FROM people WHERE id = ?",
+		bind: [id],
+		returnValue: "resultRows",
+		rowMode: "object",
+	});
+	return rows[0] as Person;
+}
+const deletePerson = async (id: string) => {
+	await db.exec({
+		sql: "DELETE FROM people WHERE id = ?",
+		bind: [id],
+	});
+}
+const updatePerson = async (name: string, birthDate: string, id: string) => {
+	const rows = await db.exec({
+		sql: "UPDATE people SET name = ?, birthDate = ? WHERE id = ? RETURNING *",
+		bind: [name, birthDate, id],
+		returnValue: "resultRows",
+		rowMode: "object",
+	});
+	return rows[0];
+}
 self.onmessage = async (event) => {
 	const action = event.data[0];
 	const actionArgs = event.data[1];
@@ -48,6 +72,18 @@ self.onmessage = async (event) => {
 		case "get_people":
 			const people = await getPeople();
 			self.postMessage(["people_fetched", people]);
+			break;
+		case "get_person_details":
+			const person = await getPersonById(actionArgs.id);
+			self.postMessage(["person_fetched", person]);
+			break;
+		case "delete_person":
+			await deletePerson(actionArgs.id);
+			self.postMessage(["person_deleted"]);
+			break;
+		case "update_person":
+			const updatedPerson = await updatePerson(actionArgs.name, actionArgs.birthDate, actionArgs.id);
+			self.postMessage(["person_updated", updatedPerson]);
 			break;
 	}
 }
