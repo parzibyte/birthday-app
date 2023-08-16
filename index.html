@@ -5,8 +5,13 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Birthday app - By Parzibyte</title>
-
+  <title>App de cumpleaños - By Parzibyte</title>
+  <link rel="manifest" href="/manifest.json">
+  <script type="text/javascript">
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js");
+    }
+  </script>
   <link rel="stylesheet" href="/src/style.css">
 </head>
 
