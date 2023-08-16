@@ -26,13 +26,16 @@ worker.onmessage = event => {
     switch (action) {
         case "ready":
             $registerButton.addEventListener("click", () => {
-                window.location.href = "./register.html";
+                worker.postMessage(["close_db"]);
             });
             $searchInput.addEventListener("input", debounce(() => {
                 worker.postMessage(["get_people", { criteria: $searchInput.value }]);
             }, 250));
             worker.postMessage(["get_people", {}]);
             updateDatesPeriodically();
+            break;
+        case "db_closed":
+            window.location.href = "./register.html";
             break;
         case "people_fetched":
             while ($container.firstChild) {

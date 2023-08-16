@@ -1,6 +1,10 @@
 import sqlite3InitModule from '@sqlite.org/sqlite-wasm';
 const NOMBRE_BASE_DE_DATOS = "birth_data.sqlite"
 let db: any;
+
+const closeDb = async () => {
+	db.close();
+}
 const init = async () => {
 	const sqlite3 = await sqlite3InitModule({
 		print: console.log,
@@ -92,6 +96,10 @@ self.onmessage = async (event) => {
 		case "update_person":
 			const updatedPerson = await updatePerson(actionArgs.name, actionArgs.birthDate, actionArgs.id);
 			self.postMessage(["person_updated", updatedPerson]);
+			break;
+		case "close_db":
+			await closeDb();
+			self.postMessage(["db_closed"]);
 			break;
 	}
 }
