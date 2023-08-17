@@ -4,7 +4,7 @@
     "description": "Aplicación para mostrar Cumpleaños",
     "theme_color": "#fce7f3",
     "background_color": "#fce7f3",
-    "display": "minimal-ui",
+    "display": "standalone",
     "orientation": "portrait",
     "scope": "./",
     "start_url": "./",
