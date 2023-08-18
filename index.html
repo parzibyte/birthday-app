@@ -23,7 +23,15 @@
         placeholder="Buscar por nombre..." />
     </div>
     <div class="flex flex-col mt-16" id="container"> </div>
-    <button id="registerButton" class="right-2 w-12 h-12  fixed bottom-2 bg-sky-300 rounded-full">
+    <div class="flex justify-center items-center min-h-screen bg-gray-100" id="loadingDiv">
+      <div class="text-center">
+        <p class="text-2xl font-semibold text-gray-800 mb-2">Cargando...</p>
+        <div class="flex justify-center items-center">
+          <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-blue-500"></div>
+        </div>
+      </div>
+    </div>
+    <button disabled id="registerButton" class="right-2 w-12 h-12  fixed bottom-2 bg-sky-300 rounded-full disabled:bg-sky-100">
       ➕
     </button>
   </div>

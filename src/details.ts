@@ -10,6 +10,13 @@ const $form = document.querySelector("#registerForm") as HTMLFormElement,
 	$deleteButton = document.querySelector("#deleteButton") as HTMLButtonElement,
 	$name = document.querySelector("#name") as HTMLInputElement,
 	$birthDate = document.querySelector("#birthDate") as HTMLInputElement;
+
+const habilitarBotones = () => {
+	[$saveButton, $deleteButton, $backButton].forEach(element => element.disabled = false);
+	$saveButton.textContent = "Guardar";
+	$deleteButton.textContent = "Eliminar";
+	$backButton.textContent = "Volver";
+};
 let person: Person;
 worker.postMessage(["init"]);
 worker.onmessage = event => {
@@ -22,14 +29,20 @@ worker.onmessage = event => {
 				if (!confirm("¿Seguro?")) {
 					return;
 				}
+				$deleteButton.textContent = "Eliminando...";
+				[$saveButton, $deleteButton, $backButton].forEach(element => element.disabled = true);
 				worker.postMessage(["delete_person", { id }]);
 			});
 			$backButton.addEventListener("click", () => {
+				$backButton.textContent = "Cargando...";
+				[$saveButton, $deleteButton, $backButton].forEach(element => element.disabled = true);
 				worker.postMessage(["close_db"]);
 			});
 			$form.addEventListener("submit", (event) => {
 				event.preventDefault();
 				const name = $name.value, birthDate = $birthDate.value;
+				[$saveButton, $deleteButton, $backButton].forEach(element => element.disabled = true);
+				$saveButton.textContent = "Guardando...";
 				worker.postMessage(["update_person", { name, birthDate, id }]);
 			});
 			break;
@@ -37,14 +50,15 @@ worker.onmessage = event => {
 			worker.postMessage(["close_db"]);
 			break;
 		case "person_updated":
-			alert("Updated");
+			habilitarBotones();
+			alert("Guardado");
 			break;
 		case "person_fetched":
 			person = actionArgs as Person;
 			document.title = `${person.name}'s details`;
 			$name.value = person.name;
 			$birthDate.value = person.birthDate;
-			[$saveButton, $deleteButton].forEach(element => element.disabled = false);
+			habilitarBotones();
 			break;
 		case "db_closed":
 			window.location.href = "./index.html";

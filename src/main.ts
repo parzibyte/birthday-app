@@ -2,6 +2,7 @@ const worker = new Worker(new URL("./db.ts", import.meta.url), { type: "module" 
 worker.postMessage(["init"]);
 const $container = document.querySelector("#container") as HTMLDivElement,
     $registerButton = document.querySelector("#registerButton") as HTMLButtonElement,
+    $loadingDiv = document.querySelector("#loadingDiv") as HTMLDivElement,
     $searchInput = document.querySelector("#searchInput") as HTMLInputElement;
 
 let divElements: HTMLDivElement[] = [];
@@ -25,6 +26,7 @@ worker.onmessage = event => {
     const actionArgs = event.data[1];
     switch (action) {
         case "ready":
+            $registerButton.disabled = false;
             $registerButton.addEventListener("click", () => {
                 worker.postMessage(["close_db"]);
             });
@@ -38,6 +40,7 @@ worker.onmessage = event => {
             window.location.href = "./register.html";
             break;
         case "people_fetched":
+            $loadingDiv.style.display = "none";
             while ($container.firstChild) {
                 $container.removeChild($container.firstChild);
             }
