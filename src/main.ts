@@ -11,9 +11,9 @@ import { debounce, getActualAge, getPersonHtml, getReadableAge, getReadableNextB
 const updateDates = () => {
     const now = new Date();
     for (const divElement of divElements) {
-        (divElement.querySelector(".person-age") as HTMLElement).textContent = getReadableAge(divElement.dataset.birthDate!);
+        (divElement.querySelector(".person-age") as HTMLElement).textContent = getReadableAge(divElement.dataset.birthDate!, now);
         (divElement.querySelector(".person-actual-age") as HTMLElement).textContent = getActualAge(divElement.dataset.birthDate!);
-        (divElement.querySelector(".person-next-birthday") as HTMLElement).textContent = `${getReadableNextBirthday(divElement.dataset.birthDate!)} (en ${getReadableTimeDifference(getNextBirthday(divElement.dataset.birthDate!).getTime() - now.getTime())})`;
+        (divElement.querySelector(".person-next-birthday") as HTMLElement).textContent = `${getReadableNextBirthday(divElement.dataset.birthDate!, now)} (en ${getReadableTimeDifference(getNextBirthday(divElement.dataset.birthDate!, now).getTime() - now.getTime())})`;
     }
 };
 

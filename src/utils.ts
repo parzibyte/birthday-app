@@ -1,4 +1,4 @@
-const formater = new Intl.DateTimeFormat("es-MX", { dateStyle: "full" });
+const formatter = new Intl.DateTimeFormat("es-MX", { dateStyle: "full" });
 export const debounce = (callback: Function, wait: number) => {
 	let timerId: number;
 	return (...args: any[]) => {
@@ -71,15 +71,9 @@ export const getActualAge = (birthDateAsString: string) => {
 	return getReadableTimeDifference(differenceInMilliseconds);
 }
 
-export const getThisYearsBirthday = (birthDate: string): Date => {
-	const now = new Date();
-	const thisYearsBirthday = new Date(birthDate);
-	thisYearsBirthday.setFullYear(now.getFullYear());
-	return thisYearsBirthday;
-}
 
-export const getNextBirthday = (birthdate: string) => {
-	const thisYearsBirthday = getThisYearsBirthday(birthdate);
+export const getNextBirthday = (birthdate: string, currentDate: Date) => {
+	const thisYearsBirthday = getThisYearsBirthday(birthdate, currentDate);
 	const now = new Date();
 	if (now.getTime() > thisYearsBirthday.getTime()) {
 		thisYearsBirthday.setFullYear(thisYearsBirthday.getFullYear() + 1);
@@ -95,44 +89,103 @@ export const daysInPreviousMonth = (): number => {
 
 
 export const getReadableBirthDate = (birthDate: string): string => {
-	return formater.format(new Date(birthDate));
+	return formatter.format(new Date(birthDate));
 }
 
-export const getReadableAge = (birthDateAsString: string): string => {
+
+export const getYears = (birthDate: Date, currentDate: Date, thisYearsBirthday: Date) => {
+	let years = currentDate.getFullYear() - birthDate.getFullYear();
+	if (currentDate.getTime() < thisYearsBirthday.getTime()) {
+		years--;
+	}
+	return years;
+}
+
+export const getMonths = (currentDate: Date, thisYearsBirthday: Date) => {
+	let months = 0;
+	if (currentDate.getTime() < thisYearsBirthday.getTime()) {
+		months = currentDate.getMonth() + 12 - thisYearsBirthday.getMonth();
+	} else {
+		months = currentDate.getMonth() - thisYearsBirthday.getMonth();
+	}
+	if (currentDate.getDate() < thisYearsBirthday.getDate()) {
+		months--;
+	}
+	return months;
+}
+export const dayCountInPreviousMonth = (fecha: Date) => {
+	const clon = new Date(fecha.getTime());
+	clon.setMonth(clon.getMonth(), 0);
+	return clon.getDate();
+}
+
+export const dayCounInCurrentMonth = (fecha: Date) => {
+	const clon = new Date(fecha.getTime());
+	clon.setMonth(clon.getMonth() + 1, 0);
+	return clon.getDate();
+}
+export const getDays = (currentDate: Date, thisYearsBirthday: Date) => {
+	if (currentDate.getTime() < thisYearsBirthday.getTime()) {
+		const daysInPreviousMonth = dayCountInPreviousMonth(thisYearsBirthday);
+		const birthDate = thisYearsBirthday.getDate();
+		const thisMonthDate = currentDate.getDate();
+		let daysElapsedInPreviousMonth = daysInPreviousMonth - birthDate;
+		if (daysElapsedInPreviousMonth < 0) {
+			daysElapsedInPreviousMonth = 0;
+		}
+		return daysElapsedInPreviousMonth + thisMonthDate;
+	} else {
+		if (thisYearsBirthday.getDate() <= currentDate.getDate()) {
+			return currentDate.getDate() - thisYearsBirthday.getDate();
+		} else {
+			let daysElapsedInPreviousMonth = dayCountInPreviousMonth(currentDate) - thisYearsBirthday.getDate();
+			if (daysElapsedInPreviousMonth < 0) {
+				daysElapsedInPreviousMonth = 0;
+			}
+			return daysElapsedInPreviousMonth + currentDate.getDate();
+		}
+	}
+}
+
+export const getThisYearsBirthday = (birthDateAsString: string, currentDate: Date) => {
+	const thisYearsBirthday = new Date(birthDateAsString);
+	thisYearsBirthday.setFullYear(currentDate.getFullYear());
+	return thisYearsBirthday;
+}
+
+export const addLetterIfNeccesary = (str: string, count: number, sufix: string = "s") => {
+	if (count === 1) {
+		return str;
+	}
+	return str + sufix;
+}
+
+export const getReadableAge = (birthDateAsString: string, currentDate: Date): string => {
 	let birthDate = new Date(birthDateAsString);
 	let result = "";
-	const now = new Date();
-	const birthdayAlreadyHappened: boolean = now.getTime() > getThisYearsBirthday(birthDateAsString).getTime();
-	let years = now.getFullYear() - birthDate.getFullYear() + (birthdayAlreadyHappened ? 0 : -1);
-	let months: number, days: number;
-	const thisMonthDate = new Date();
-	thisMonthDate.setDate(birthDate.getDate());
-	if (now.getDate() < thisMonthDate.getDate()) {
-		days = now.getDate() + (daysInPreviousMonth() - birthDate.getDate()) + 1;
-	} else {
-		days = now.getDate() - birthDate.getDate();
-	}
-	if (birthdayAlreadyHappened) {
-		months = now.getMonth() - birthDate.getMonth() - 1;
-		if (months < 0) {
-			months = 0;
-		}
-	} else {
-		months = (11 - birthDate.getMonth()) + now.getMonth();
-	}
+	const thisYearsBirthday = getThisYearsBirthday(birthDateAsString, currentDate);
+	let years = getYears(birthDate, currentDate, thisYearsBirthday)
+	let months = getMonths(currentDate, thisYearsBirthday);
+	let days = getDays(currentDate, thisYearsBirthday);
 	if (years > 0) {
-		result += `${years} años`;
+		result += `${years} ${addLetterIfNeccesary("año", years)}`;
 	}
 	if (months > 0) {
-		result += `, ${months} meses`;
+		if (years > 0) {
+			result += ", "
+		}
+		result += `${months} ${addLetterIfNeccesary("mes", months, "es")}`;
 	}
 	if (days > 0) {
-		result += `, ${days} días`;
+		if (months > 0 || years > 0) {
+			result += ", "
+		}
+		result += `${days} ${addLetterIfNeccesary("día", days)}`;
 	}
 
 	return result;
 };
 
-export const getReadableNextBirthday = (birthDate: string): string => {
-	return formater.format(getNextBirthday(birthDate))
+export const getReadableNextBirthday = (birthDate: string, currentDate: Date): string => {
+	return formatter.format(getNextBirthday(birthDate, currentDate))
 }
